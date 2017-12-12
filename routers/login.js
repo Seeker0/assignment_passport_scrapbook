@@ -1,16 +1,9 @@
-var express = require("express");
+var express = require('express');
 var router = express.Router();
-var mongoose = require("mongoose");
-var models = require("./../models");
-var User = mongoose.model("User");
+var mongoose = require('mongoose');
+var models = require('./../models');
+var User = mongoose.model('User');
 var passport = require('./../passportConfig');
-
-
-
-
-
-
-
 
 router.post(
   '/',
@@ -21,15 +14,18 @@ router.post(
   })
 );
 
+router.get('/facebook', passport.authenticate('facebook'));
 
-router.get('/facebook',
-  passport.authenticate('facebook'));
-
-router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }),
+router.get(
+  '/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
     console.log("FACEBOOK RESPONSE")
-    console.log(req);
     res.redirect('/');
+    // console.log('FACEBOOK RESPONSE');
+    // console.log(req);
+    console.log(req.user);
+    res.redirect('/', { user: req.user });
   }
 );
 
