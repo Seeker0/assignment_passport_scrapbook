@@ -4,7 +4,8 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const UserSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  passwordHash: { type: String, required: true }
+  passwordHash: { type: String },
+  facebookId: { type: String }
 });
 
 UserSchema.plugin(uniqueValidator);
@@ -22,7 +23,22 @@ UserSchema.virtual('password')
     this.passwordHash = bcrypt.hashSync(value, 8);
   });
 
+
+UserSchema.statics.findOrCreate = async function(query, username) {
+  try {
+    let user = await User.findOne(query);
+    if (!user) {
+      user = new User(query);
+      user.username = username;
+      await user.save();
+    }
+    return user;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
-

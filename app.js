@@ -1,5 +1,11 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
+
+const login = require('./routers/login');
+
+var passport = require('./passportConfig');
+
 
 // ----------------------------------------
 // App Variables
@@ -9,9 +15,6 @@ app.locals.appName = 'My App';
 // ----------------------------------------
 // ENV
 // ----------------------------------------
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
 
 // ----------------------------------------
 // Body Parser
@@ -77,10 +80,6 @@ const morganToolkit = require('morgan-toolkit')(morgan);
 app.use(morganToolkit());
 
 // ----------------------------------------
-// Routes
-// ----------------------------------------
-
-// ----------------------------------------
 // Template Engine
 // ----------------------------------------
 const expressHandlebars = require('express-handlebars');
@@ -96,41 +95,22 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 // require Passport and the Local Strategy
-const passport = require('passport');
+
+
 app.use(passport.initialize());
 app.use(passport.session());
 
 //passport settings
-const User = require('./models/User');
+const User = require('./models/user');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/passport-demo');
 
-const LocalStrategy = require('passport-local').Strategy;
 
-passport.use(
-  new LocalStrategy(function(username, password, done) {
-    User.findOne({ username }, function(err, user) {
-      console.log(user);
-      if (err) return done(err);
-      if (!user || !user.validPassword(password)) {
-        return done(null, false, { message: 'Invalid username/password' });
-      }
-      return done(null, user);
-    });
-  })
-);
 
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
 
 //Routes
+app.use('/login', login);
+
 app.get('/', (req, res) => {
   if (req.user) {
     app.locals.username = req.user.username;
@@ -140,22 +120,11 @@ app.get('/', (req, res) => {
   }
 });
 
-app.get('/login', (req, res) => {
-  res.render('welcome/login');
-});
 
 app.get('/register', (req, res) => {
   res.render('welcome/login');
 });
 
-app.post(
-  '/login',
-  passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
-  })
-);
 
 app.post('/register', (req, res, next) => {
   const { username, password } = req.body;

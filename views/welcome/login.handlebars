@@ -1,3 +1,26 @@
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1599022836843896',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v2.11'
+    });
+      
+    FB.AppEvents.logPageView();   
+      
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
 <div class="col-sm-6 col-sm-offset-3">
   <div class="panel panel-default">
     <div class="panel-heading">Login</div>
@@ -33,3 +56,10 @@
           </form>
 
         </div>
+
+<div>
+<form action="/login/facebook" method="get">
+<input type="submit" value="Login With Facebook">
+
+</form>
+</div>
