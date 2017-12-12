@@ -1,1 +1,6 @@
 <h1>Hello {{username}}</h1>
+
+
+{{#each user.facebookPhotos as |photo|}}
+<div><img src={{photo}}></div>
+{{/each}}
