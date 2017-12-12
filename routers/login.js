@@ -29,7 +29,6 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
   function(req, res) {
     console.log("FACEBOOK RESPONSE")
     console.log(req);
-    console.log(req.body);
     res.redirect('/');
   }
 );
