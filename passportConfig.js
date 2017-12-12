@@ -29,12 +29,11 @@ passport.deserializeUser(function(id, done) {
 });
 
 passport.use(
-  new FacebookStrategy(
-    {
+  new FacebookStrategy({
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET,
       callbackURL: 'http://localhost:3000/login/facebook/callback',
-      profileFields: ['id', 'displayName', 'name', 'gender', 'photos']
+      profileFields: ['id', 'displayName', 'name', 'gender', 'photos', 'emails']
     },
     async function(accessToken, refreshToken, profile, cb) {
       // console.log(accessToken);
@@ -43,11 +42,15 @@ passport.use(
       // console.log(cb);
       let username = profile.displayName;
       try {
-        let user = await User.findOrCreate(
-          { facebookId: profile.id },
+        let user = await User.findOrCreate({ facebookId: profile.id },
           username
         );
-        user.facebookPhotos = profile.photos;
+        let photos = [];
+        profile.photos.forEach(photoObj => {
+          photos.push(photoObj.value);
+        })
+
+        user.facebookPhotos = photos;
         user = await user.save();
         // console.log(user);
         return cb(null, user);

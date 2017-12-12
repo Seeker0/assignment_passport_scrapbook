@@ -113,7 +113,9 @@ app.use('/login', login);
 
 app.get('/', (req, res) => {
   if (req.user) {
+    console.log(req.user)
     app.locals.username = req.user.username;
+
     res.render('welcome/home', { user: req.user });
   } else {
     res.redirect('/login');

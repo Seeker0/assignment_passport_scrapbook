@@ -20,12 +20,9 @@ router.get(
   '/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    console.log("FACEBOOK RESPONSE")
     res.redirect('/');
     // console.log('FACEBOOK RESPONSE');
     // console.log(req);
-    console.log(req.user);
-    res.redirect('/', { user: req.user });
   }
 );
 
