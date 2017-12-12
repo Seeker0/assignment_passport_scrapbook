@@ -14,10 +14,13 @@ router.post(
   })
 );
 
-router.get('/facebook', passport.authenticate('facebook', {
-  authType: 'rerequest',
-  scope: ['user_friends', 'email', 'public_profile'],
-}));
+router.get(
+  '/facebook',
+  passport.authenticate('facebook', {
+    authType: 'rerequest',
+    scope: ['user_friends', 'email', 'public_profile']
+  })
+);
 
 router.get(
   '/facebook/callback',
@@ -29,7 +32,6 @@ router.get(
   }
 );
 
-
 router.get('/twitter', passport.authenticate('twitter'));
 
 router.get(
@@ -39,6 +41,17 @@ router.get(
     res.redirect('/');
     // console.log('FACEBOOK RESPONSE');
     // console.log(req);
+  }
+);
+
+router.get('/youtube', passport.authenticate('youtube'));
+
+router.get(
+  '/youtube/callback',
+  passport.authenticate('youtube', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
   }
 );
 
