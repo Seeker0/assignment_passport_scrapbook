@@ -1,6 +1,15 @@
 <h1>Hello {{username}}</h1>
 
+<h1>Facebook Stuff</h1>
 
 {{#each user.facebookPhotos as |photo|}}
+<div><img src={{photo}}></div>
+{{/each}}
+
+
+<h1>Twitter Stuff</h1>
+
+
+{{#each user.twitterPhotos as |photo|}}
 <div><img src={{photo}}></div>
 {{/each}}

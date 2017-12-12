@@ -1,5 +1,7 @@
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
+
 const LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
 var models = require('./models');
@@ -33,7 +35,7 @@ passport.use(
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET,
       callbackURL: 'http://localhost:3000/login/facebook/callback',
-      profileFields: ['id', 'displayName', 'name', 'gender', 'photos', 'emails']
+      profileFields: ['id', 'displayName', 'name', 'gender', 'photos', 'email'],
     },
     async function(accessToken, refreshToken, profile, cb) {
       // console.log(accessToken);
@@ -42,23 +44,65 @@ passport.use(
       // console.log(cb);
       let username = profile.displayName;
       try {
-        let user = await User.findOrCreate({ facebookId: profile.id },
-          username
-        );
+        let user = await User.findOrCreate({ email: profile.emails[0].value });
         let photos = [];
         profile.photos.forEach(photoObj => {
           photos.push(photoObj.value);
         })
-
+        user.facebookId = profile.id;
         user.facebookPhotos = photos;
         user = await user.save();
-        // console.log(user);
         return cb(null, user);
       } catch (e) {
         cb(e);
       }
     }
   )
+
+
+
 );
+
+
+passport.use(new TwitterStrategy({
+    consumerKey: process.env.CONSUMER_KEY,
+    consumerSecret: process.env.CONSUMER_SECRET,
+    callbackURL: "http://localhost:3000/login/twitter/callback"
+  },
+  async function(token, tokenSecret, profile, cb) {
+    console.log(`TWITTER CALLBACK FUNCTION`)
+    console.log(profile);
+    let user = await User.findOrCreate({ twitterId: profile.id });
+    let photos = [];
+    profile.photos.forEach(photoObj => {
+      photos.push(photoObj.value);
+    })
+    user.twitterPhotos = photos;
+    await user.save();
+    return (cb(null, user));
+    // console.log(cb);
+    /*
+    let username = profile.displayName;
+    try {
+      let user = await User.findOrCreate({ facebookId: profile.id },
+        username
+      );
+      let photos = [];
+      profile.photos.forEach(photoObj => {
+        photos.push(photoObj.value);
+      })
+      //console.log(`EMAILS ${profile.emails}`)
+
+      user.facebookPhotos = photos;
+      user = await user.save();
+      // console.log(user);
+      return cb(null, user);
+    } catch (e) {
+      cb(e);
+    }
+    */
+  }));
+
+
 
 module.exports = passport;

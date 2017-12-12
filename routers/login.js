@@ -14,11 +14,27 @@ router.post(
   })
 );
 
-router.get('/facebook', passport.authenticate('facebook'));
+router.get('/facebook', passport.authenticate('facebook', {
+  authType: 'rerequest',
+  scope: ['user_friends', 'email', 'public_profile'],
+}));
 
 router.get(
   '/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+    // console.log('FACEBOOK RESPONSE');
+    // console.log(req);
+  }
+);
+
+
+router.get('/twitter', passport.authenticate('twitter'));
+
+router.get(
+  '/twitter/callback',
+  passport.authenticate('twitter', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
     // console.log('FACEBOOK RESPONSE');
